@@ -1,16 +1,19 @@
 FROM debian:buster-slim
 
+ARG APP_VERSION
 ARG APP_HASH
 ARG BUILD_DATE
 
-LABEL org.label-schema.vcs-ref=$APP_HASH \
-      org.label-schema.version=$APP_HASH \
+LABEL org.label-schema.version=$APP_VERSION \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$APP_HASH \
       org.label-schema.vcs-url="https://github.com/domoticz/domoticz" \
       org.label-schema.url="https://domoticz.com/" \
+      org.label-schema.vendor="Domoticz" \
       org.label-schema.name="Domoticz" \
       org.label-schema.description="Domoticz open source Home Automation system" \
       org.label-schema.license="GPLv3" \
-      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.docker.cmd="docker run -v ./config:/config -v ./plugins:/opt/domoticz/plugins -e DATABASE_PATH=/config/domoticz.db -p 8080:8080 -d domoticz/domoticz" \
       maintainer="Domoticz Docker Maintainers <info@domoticz.com>"
 
 WORKDIR /opt/domoticz
