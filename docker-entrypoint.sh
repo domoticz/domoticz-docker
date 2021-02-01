@@ -1,7 +1,7 @@
 #!/bin/bash
-set -e
 
-CMD_ARGS="-noupdates -www $WWW_PORT -sslwww $SSL_PORT"
+CMD_ARGS="-www $WWW_PORT"
+CMD_ARGS="$CMD_ARGS -sslwww $SSL_PORT -userdata /opt/domoticz/userdata"
 
 if [ -n "$LOG_PATH" ]; then
   CMD_ARGS="$CMD_ARGS -log $LOG_PATH"
@@ -11,4 +11,12 @@ if [ -n "$DATABASE_PATH" ]; then
   CMD_ARGS="$CMD_ARGS -dbase $DATABASE_PATH"
 fi
 
-exec "$@"
+if [ -n "$EXTRA_CMD_ARG" ]; then
+  CMD_ARGS="$CMD_ARGS $EXTRA_CMD_ARG"
+fi
+
+if [ $1 == "/opt/domoticz/domoticz" ]; then
+  exec $@ $CMD_ARGS
+else
+  exec "$@"
+fi

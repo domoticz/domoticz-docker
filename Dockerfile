@@ -33,16 +33,14 @@ RUN set -ex \
     && archive_file="domoticz_${OS}_${MACH}.tgz" \
     && version_file="version_${OS}_${MACH}.h" \
     && history_file="history_${OS}_${MACH}.txt" \
-#   && curl -k -L https://releases.domoticz.com/releases/beta/${version_file} --output version.h \
     && curl -k -L https://releases.domoticz.com/releases/beta/${archive_file} --output domoticz.tgz \
     && tar xfz domoticz.tgz \
     && rm domoticz.tgz \
+    && mkdir -p /opt/domoticz/userdata \
     && apt-get remove --purge --auto-remove -y curl \
     && rm -rf /var/lib/apt/lists/*
 
-VOLUME /config
-VOLUME /opt/domoticz/plugins
-VOLUME /log
+VOLUME /opt/domoticz/userdata
 
 EXPOSE 8080
 EXPOSE 443
@@ -51,6 +49,7 @@ ENV LOG_PATH=
 ENV DATABASE_PATH=
 ENV WWW_PORT=8080
 ENV SSL_PORT=443
+ENV EXTRA_CMD_ARG=
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
