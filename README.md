@@ -61,7 +61,8 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./config:/opt/domoticz/userdata
     environment:
-      #ENV LOG_PATH=/opt/domoticz/userdata/domoticz.log
+      - TZ=Europe/Amsterdam
+      #- ENV LOG_PATH=/opt/domoticz/userdata/domoticz.log
 ```
 
 ### Building the image

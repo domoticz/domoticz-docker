@@ -21,6 +21,7 @@ WORKDIR /opt/domoticz
 RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
+        tzdata \
         unzip \
         git \
         libudev-dev \
@@ -50,6 +51,9 @@ ENV DATABASE_PATH=
 ENV WWW_PORT=8080
 ENV SSL_PORT=443
 ENV EXTRA_CMD_ARG=
+
+# timezone env with default
+ENV TZ=Europe/Amsterdam
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
