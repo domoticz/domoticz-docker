@@ -5,7 +5,14 @@ Domoticz
 Domoticz - http://www.domoticz.com/
 
 Docker containers with official Domoticz (beta) builds.
-*(Currently available for 32/64 arm and 64 bit Linux platforms.)*
+
+*Currently available for the following Linux platforms:*
+
+| Image Architectures |
+| :----: |
+| Arm 32 bit |
+| Arm 64 bit |
+| Linux 64 bit |
 
 Domoticz is a Home Automation System that lets you monitor and configure various devices like: Lights, Switches, various sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water and much more. Notifications/Alerts can be sent to any mobile device
 
@@ -54,7 +61,7 @@ services:
     restart: unless-stopped
     # Pass devices to container
     # devices:
-    #   - "dev/serial/by-id/usb-0658_0200-if00:/dev/ttyACM0"
+    #   - "/dev/serial/by-id/usb-0658_0200-if00:/dev/ttyACM0"
     ports:
       - "8080:8080"
     volumes:
@@ -63,6 +70,25 @@ services:
     environment:
       - TZ=Europe/Amsterdam
       #- ENV LOG_PATH=/opt/domoticz/userdata/domoticz.log
+```
+
+### Updating the image
+From within the container folder issue:
+```
+docker-compose pull domoticz
+docker-compose down
+docker-compose up -d --remove-orphans
+docker image prune
+```
+
+### Shell access whilst the container is running
+```
+docker exec -it domoticz bash
+```
+
+### Monitor the logs of the container
+```
+docker logs -f domoticz
 ```
 
 ### Building the image
@@ -74,6 +100,7 @@ docker buildx build --no-cache --platform linux/arm/v6,linux/arm/v7,linux/arm64/
 ### Enviroment values
 **ENV WWW_PORT=8080** - Specify default HTTP port
 **ENV SSL_PORT=443** - Specify default SSL port
+**ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**
 **EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help)
 
 You could use the extra_cmd_arg value to specify the SSL certificate
