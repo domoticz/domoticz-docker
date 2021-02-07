@@ -34,7 +34,7 @@ docker run -d \
     -p 8080:8080 \
     -p 8443:443 \
     -v <path for config files>:/opt/domoticz/userdata \
-    -v /etc/localtime:/etc/localtime:ro \
+    -e TZ=Europe/Amsterdam
     --device=<device_id> \
     --name=<container name> \ 
     domoticz/domoticz
@@ -73,11 +73,10 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - /etc/localtime:/etc/localtime:ro
       - ./config:/opt/domoticz/userdata
     environment:
       - TZ=Europe/Amsterdam
-      #- ENV LOG_PATH=/opt/domoticz/userdata/domoticz.log
+      #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
 ```
 Now you can launch the container by issuing:
 
