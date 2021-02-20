@@ -15,6 +15,8 @@ Docker containers with official Domoticz (beta) builds.
 | Arm 64 bit |
 | Linux 64 bit |
 
+Repository: https://hub.docker.com/repository/docker/domoticz/domoticz
+
 Domoticz is a Home Automation System that lets you monitor and configure various devices like: Lights, Switches, various sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water and much more. Notifications/Alerts can be sent to any mobile device
 
 ## How to use
