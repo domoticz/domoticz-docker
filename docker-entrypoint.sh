@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CMD_ARGS="-www $WWW_PORT"
-CMD_ARGS="$CMD_ARGS -sslwww $SSL_PORT -userdata /opt/domoticz/userdata"
+CMD_ARGS="$CMD_ARGS -noupdates -sslwww $SSL_PORT -userdata /opt/domoticz/userdata"
 
 if [ -n "$LOG_PATH" ]; then
   CMD_ARGS="$CMD_ARGS -log $LOG_PATH"
