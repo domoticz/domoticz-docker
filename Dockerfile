@@ -18,6 +18,8 @@ LABEL org.label-schema.version=$APP_VERSION \
 
 WORKDIR /opt/domoticz
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
