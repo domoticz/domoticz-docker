@@ -45,7 +45,8 @@ RUN set -ex \
     && mkdir -p /opt/domoticz/userdata \
     && apt-get remove --purge --auto-remove -y curl \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/pip3 /usr/bin/pip
+    && ln -s /usr/bin/pip3 /usr/bin/pip \
+    && pip3 install setuptools requests
 
 VOLUME /opt/domoticz/userdata
 
@@ -60,8 +61,6 @@ ENV EXTRA_CMD_ARG=
 
 # timezone env with default
 ENV TZ=Europe/Amsterdam
-#ADD some common python libraries 
-RUN pip3 install setuptools requests 
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
