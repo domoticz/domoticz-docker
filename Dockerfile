@@ -59,7 +59,7 @@ ENV EXTRA_CMD_ARG=
 # timezone env with default
 ENV TZ=Europe/Amsterdam
 #ADD some common python libraries 
-RUN python3 -m pip install setuptools requests 
+RUN python3 -m python3-pip install setuptools requests 
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
