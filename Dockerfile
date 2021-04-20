@@ -44,7 +44,8 @@ RUN set -ex \
     && rm domoticz.tgz \
     && mkdir -p /opt/domoticz/userdata \
     && apt-get remove --purge --auto-remove -y curl \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/pip3 /usr/bin/pip
 
 VOLUME /opt/domoticz/userdata
 
