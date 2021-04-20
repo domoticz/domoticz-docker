@@ -26,6 +26,7 @@ RUN set -ex \
         git \
         libudev-dev \
         libusb-0.1-4 \
+        libsqlite3-0 \
         curl libcurl4 libcurl4-gnutls-dev \
         libpython3.7-dev \
         python3 \
