@@ -32,6 +32,7 @@ RUN set -ex \
         curl libcurl4 libcurl4-gnutls-dev \
         libpython3.7-dev \
         python3 \
+        python3-pip \
     && OS="$(uname -s | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')" \
     && MACH=$(uname -m) \
     && if [ ${MACH} = "armv6l" ]; then MACH = "armv7l"; fi \
@@ -59,7 +60,7 @@ ENV EXTRA_CMD_ARG=
 # timezone env with default
 ENV TZ=Europe/Amsterdam
 #ADD some common python libraries 
-RUN python3 -m python3-pip install setuptools requests 
+RUN pip3 install setuptools requests 
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
