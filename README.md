@@ -84,11 +84,11 @@ Now you can launch the container by issuing:
 
     docker-compose up -d
 
-### Enviroment values
-**ENV WWW_PORT=8080** - Specify default HTTP port
-**ENV SSL_PORT=443** - Specify default SSL port
-**ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**
-**EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help)
+### Environment values
+**ENV WWW_PORT=8080** - Specify default HTTP port  
+**ENV SSL_PORT=443** - Specify default SSL port  
+**ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
+**EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
 
 You could use the extra_cmd_arg value to specify the SSL certificate
 
