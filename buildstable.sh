@@ -25,4 +25,4 @@ docker buildx rm domoticz_build >/dev/null 2>&1 || true
 docker buildx create --name domoticz_build
 docker buildx use domoticz_build
 docker buildx inspect --bootstrap
-echo "docker buildx build --push --no-cache --platform ${BUILDX_PLATFORMS} --build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE --build-arg STABLE=true --tag domoticz/domoticz:$STABLE_VERSION-stable ."
+echo "docker buildx build --push --no-cache --platform ${BUILDX_PLATFORMS} --build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE --build-arg STABLE=true --tag domoticz/domoticz:latest-stable --tag domoticz/domoticz:$STABLE_VERSION-stable ."
