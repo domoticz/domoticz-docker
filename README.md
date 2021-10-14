@@ -25,10 +25,14 @@ The recommended method is to use Docker Compose (See below)
 
 **Pull image**
 
+latest beta:
 ```
 docker pull domoticz/domoticz
 ```
-
+latest stable:
+```
+docker pull domoticz/domoticz:latest-stable
+```
 **Run container**
 
 ```
