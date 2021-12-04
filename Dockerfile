@@ -3,8 +3,9 @@ FROM debian:buster-slim
 ARG APP_VERSION
 ARG APP_HASH
 ARG BUILD_DATE
-# If stable argument is passed it will download stable instead of beta
-ARG STABLE
+ARG BUILDPLATFORM
+ARG RELEASE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL org.label-schema.version=$APP_VERSION \
       org.label-schema.build-date=$BUILD_DATE \
@@ -18,9 +19,15 @@ LABEL org.label-schema.version=$APP_VERSION \
       org.label-schema.docker.cmd="docker run -v ./config:/config -v ./plugins:/opt/domoticz/plugins -e DATABASE_PATH=/config/domoticz.db -p 8080:8080 -d domoticz/domoticz" \
       maintainer="Domoticz Docker Maintainers <info@domoticz.com>"
 
-WORKDIR /opt/domoticz
+ENV LOG_PATH=
+ENV DATABASE_PATH=
+ENV WWW_PORT=8080
+ENV SSL_PORT=443
+ENV EXTRA_CMD_ARG=
+ENV EXTRA_PACKAGES=
 
-ARG DEBIAN_FRONTEND=noninteractive
+# timezone env with default
+ENV TZ=Europe/Amsterdam
 
 RUN set -ex \
     && apt-get update \
@@ -33,39 +40,23 @@ RUN set -ex \
         libsqlite3-0 \
         curl libcurl4 libcurl4-gnutls-dev \
         libpython3.7-dev \
-        python3 \
+        python3 python3-requests python3-setuptools \
         python3-pip \
-    && OS="$(uname -s | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')" \
-    && MACH=$(uname -m) \
-    && if [ ${MACH} = "armv6l" ]; then MACH = "armv7l"; fi \
-    && archive_file="domoticz_${OS}_${MACH}.tgz" \
-    && version_file="version_${OS}_${MACH}.h" \
-    && history_file="history_${OS}_${MACH}.txt" \
-    && if [ -z "$STABLE"]; then curl -k -L https://releases.domoticz.com/releases/beta/${archive_file} --output domoticz.tgz; else curl -k -L https://releases.domoticz.com/releases/release/${archive_file} --output domoticz.tgz; fi \
-    && tar xfz domoticz.tgz \
-    && rm domoticz.tgz \
-    && mkdir -p /opt/domoticz/userdata \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/pip3 /usr/bin/pip \
-    && pip3 install setuptools requests
+    && ln -s /usr/bin/pip3 /usr/bin/pip
 
-VOLUME /opt/domoticz/userdata
-
-EXPOSE 8080
-EXPOSE 443
-
-ENV LOG_PATH=
-ENV DATABASE_PATH=
-ENV WWW_PORT=8080
-ENV SSL_PORT=443
-ENV EXTRA_CMD_ARG=
-
-# timezone env with default
-ENV TZ=Europe/Amsterdam
+ADD $RELEASE/$BUILDPLATFORM/domoticz.tgz /opt/domoticz/
 
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
-    && ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+
+RUN mkdir -p /opt/domoticz/userdata \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && ln -s /usr/local/bin/docker-entrypoint.sh / # backwards compat
+
+VOLUME /opt/domoticz/userdata
+EXPOSE 8080
+EXPOSE 443
+WORKDIR /opt/domoticz
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["/opt/domoticz/domoticz"]

@@ -1,49 +1,56 @@
 
 
-Domoticz
-======
+# Domoticz
 
-Domoticz - http://www.domoticz.com/
+Docker containers with official Domoticz stable and beta builds. Currently available are platforms for:
 
-Docker containers with official Domoticz (beta) builds.
-
-*Currently available for the following Linux platforms:*
-
-| Image Architectures |
-| :----: |
-| Arm 32 bit |
-| Arm 64 bit |
-| Linux 64 bit |
+* Linux ARM v7 32 bit
+* Linux ARM 64 bit
+* Linux Intel/AMD 64 bit
 
 Repository: https://hub.docker.com/repository/docker/domoticz/domoticz
 
-Domoticz is a Home Automation System that lets you monitor and configure various devices like: Lights, Switches, various sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water and much more. Notifications/Alerts can be sent to any mobile device
+[Domoticz](http://www.domoticz.com/) is a Home Automation System that lets you monitor and configure various devices like: lights, switches, sensors/meters like temperature, rain, wind, UV, electra, gas, water, and much more. Notifications and alerts can be sent to any mobile device.
 
 ## How to use
 
-The recommended method is to use Docker Compose (See below)
+The recommended method is to use Docker Compose (see below).
 
-**Pull image**
+### Pull image
 
+Pull the latest image:
+```shell
+$ docker pull domoticz/domoticz
 ```
-docker pull domoticz/domoticz
+
+Pull the latest beta version:
+```shell
+$ docker pull domoticz/domoticz:beta
 ```
 
-_You can also specify a specific version to use with:_
-
-**docker pull domoticz/domoticz:beta** _(will pull latest beta version)_  
-**docker pull domoticz/domoticz:stable** _(will pull latest stable version)_  
-**docker pull domoticz/domoticz:2021.1** _(will pull latest stable version 2021.1)_  
-**docker pull domoticz/domoticz:2021-beta.12345** _(will pull beta with build number 12345)_  
-
-**Run container**
-
+Pull the latest stable version:
+```shell
+$ docker pull domoticz/domoticz:stable
 ```
-docker run -d \
+
+Pull stable version 2021.1:
+```shell
+$ docker pull domoticz/domoticz:2021.1
+```
+
+Pull beta with build number 12345:
+```shell
+$ docker pull domoticz/domoticz:2021-beta.12345
+```
+
+### Run container
+
+```shell
+$ docker run -d \
     -p 8080:8080 \
     -p 8443:443 \
     -v <path for config files>:/opt/domoticz/userdata \
-    -e TZ=Europe/Amsterdam
+    -e TZ=Europe/Amsterdam \
     --device=<device_id> \
     --name=<container name> \ 
     domoticz/domoticz
@@ -51,23 +58,23 @@ docker run -d \
 
 Please replace all user variables in the above command defined by <> with the correct values (you can have several USB devices attached, just add other `--device=<device_id>`).
 
-**Access Domoticz**
+### Access Domoticz
 
-```
-http://<host ip>:8080
-*or*
-https://<host ip>:8443
-```
+Depending on the configured port:
+
+* http://<host ip>:8080
+* https://<host ip>:8443
 
 8080 can be another port (you change `-p 8080:8080` to `-p 8081:8080` to have 8081 out of the container for example).
 
 ### Usage with docker-compose
 
-    mkdir /opt/domoticz
-    cd /opt/domoticz
-Inside this folder create a file (*docker-compose.yml*) with the following contents
+```shell
+$ mkdir /opt/domoticz
+$ cd /opt/domoticz
+```
+Inside this folder create `docker-compose.yml` with the following contents:
 
-*docker-compose.yml*
 ```yaml
 version: '3.3'
 
@@ -89,43 +96,48 @@ services:
 ```
 Now you can launch the container by issuing:
 
-    docker-compose up -d
+```shell
+$ docker-compose up -d
+```
 
-### Environment values
-**ENV WWW_PORT=8080** - Specify default HTTP port  
-**ENV SSL_PORT=443** - Specify default SSL port  
-**ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
-**EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
+### Environment variables
 
-You could use the extra_cmd_arg value to specify the SSL certificate
+| Variable       | Default value    | Description                                                  |
+| -------------- | ---------------- | ------------------------------------------------------------ |
+| WWW_PORT       | 8080             | Specify default HTTP port                                    |
+| SSL_PORT       | 443              | Specify default SSL port (0 for no SSL)                      |
+| TZ             | Europe/Amsterdam | Specify default timezone (see /usr/share/zoneinfo folder), only needed when you can not mount the volume /etc/localtime |
+| EXTRA_CMD_ARG  |                  | Option to override additional command line parameters (see `domoticz --help` or the [documentation](https://www.domoticz.com/wiki/Command_line_parameters)) |
+| EXTRA_PACKAGES |                  | Extra Debian APT packages to be installes, e.g. `python3-requests`, etc. Space delimited. |
 
 ### Python Plugins
-When launching the docker container for the first time, a plugin folder is created in the *userdata* folder
-You need to place your python plugins is folder
+When launching the docker container for the first time, a plugin folder is created in the `userdata` folder. You need to place your python plugins in this folder.
+
+## Maintenance
 
 ### Updating the image
 From within the container folder issue:
-```
-docker-compose pull domoticz
-docker-compose down
-docker-compose up -d --remove-orphans
-docker image prune
+```shell
+$ docker-compose pull domoticz
+$ docker-compose down
+$ docker-compose up -d --remove-orphans
+$ docker image prune
 ```
 
 ### Logging
-Logging is disabled by default, and you can see the interna logs via the web gui.
-When you enable logging, keep in mind that the log file can become quite large.
+You can see the internal logs via the web gui. Logging to disk is disabled by default.
+When you enable disk logging, keep in mind that the log file can become quite large.
 Do not leave this enabled when not needed.
 
 ### Shell access whilst the container is running
-```
-docker exec -it domoticz 
+```shell
+$ docker exec -it domoticz 
 ```
 
 ### Monitor the logs of the container
-```
-docker logs -f domoticz
+```shell
+$ docker logs -f domoticz
 ```
 
 ### Building the image
-clone the github repository and issue the build.sh script (you might want to edit this file)
+Clone the github repository and issue the `build.sh` script.
