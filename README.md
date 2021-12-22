@@ -1,6 +1,6 @@
-
-
 # Domoticz
+
+Domoticz - http://www.domoticz.com/
 
 Docker containers with official Domoticz stable and beta builds. Currently available are platforms for:
 
@@ -52,7 +52,7 @@ $ docker run -d \
     -v <path for config files>:/opt/domoticz/userdata \
     -e TZ=Europe/Amsterdam \
     --device=<device_id> \
-    --name=<container name> \ 
+    --name=<container name> \
     domoticz/domoticz
 ```
 
@@ -131,7 +131,7 @@ Do not leave this enabled when not needed.
 
 ### Shell access whilst the container is running
 ```shell
-$ docker exec -it domoticz 
+$ docker exec -it domoticz
 ```
 
 ### Monitor the logs of the container
