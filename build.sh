@@ -10,11 +10,21 @@ then
         echo "Error downloading version file!";
         exit 1
 fi
+curl -ksL https://releases.domoticz.com/releases/beta/history_linux_x86_64.txt --output history.h
+if [ $? -ne 0 ]
+then
+        echo "Error downloading version file!";
+        exit 1
+fi
 
 declare $(cat version.h | awk '{print $2"="$3}')
 RELEASE_DATE="$(date -d @$APPDATE -u +"%Y-%m-%dT%H:%M:%SZ")"
-BETA_VERSION=2022
-echo "Building release $BETA_VERSION.$APPVERSION from commit $APPHASH ($RELEASE_DATE)";
+
+VERSION_TAG_RAW=$(cat history.h | head -1 | awk '{print $2}')
+IFS='.' read -r -a array <<< "$VERSION_TAG_RAW"
+VERSION_TAG="${array[0]}"
+
+echo "Building release $VERSION_TAG.$APPVERSION from commit $APPHASH ($RELEASE_DATE)";
 
 # Remove double quotes in APPHASH
 APPHASH="${APPHASH%\"}"
@@ -25,4 +35,4 @@ docker buildx rm domoticz_build >/dev/null 2>&1 || true
 docker buildx create --name domoticz_build
 docker buildx use domoticz_build
 docker buildx inspect --bootstrap
-echo "docker buildx build --push --no-cache --platform ${BUILDX_PLATFORMS} --build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE --tag domoticz/domoticz:latest --tag domoticz/domoticz:beta --tag domoticz/domoticz:$BETA_VERSION-beta.$APPVERSION ."
+echo "docker buildx build --push --no-cache --platform ${BUILDX_PLATFORMS} --build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE --tag domoticz/domoticz:latest --tag domoticz/domoticz:beta --tag domoticz/domoticz:$VERSION_TAG-beta.$APPVERSION ."

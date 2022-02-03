@@ -52,6 +52,7 @@ RUN set -ex \
 VOLUME /opt/domoticz/userdata
 
 EXPOSE 8080
+EXPOSE 6144
 EXPOSE 443
 
 ENV LOG_PATH=
