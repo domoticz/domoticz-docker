@@ -33,8 +33,8 @@ _You can also specify a specific version to use with:_
 
 **docker pull domoticz/domoticz:beta** _(will pull latest beta version)_  
 **docker pull domoticz/domoticz:stable** _(will pull latest stable version)_  
-**docker pull domoticz/domoticz:2021.1** _(will pull latest stable version 2021.1)_  
-**docker pull domoticz/domoticz:2021-beta.12345** _(will pull beta with build number 12345)_  
+**docker pull domoticz/domoticz:2022.1** _(will pull latest stable version 2021.1)_  
+**docker pull domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
 
 **Run container**
 
