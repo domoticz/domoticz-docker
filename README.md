@@ -112,6 +112,16 @@ docker-compose up -d --remove-orphans
 docker image prune
 ```
 
+### custom startup script for the container
+The container supports running a custom (bash) script before the domoticz process starts.
+This way, you can custmise anything in the container that you need:
+- install incremental apt packages (don't forget to apt update before you apt install)
+- install incremental python functions (pip3 install)
+- and so on
+The container calls a script named customstart.sh in userdata, if that script exists.
+Please note that the script gets called on EVERY start of the container, not just at creation time.
+If you want the script to run only once, you need to build that in your script (e.g. test for a file you create in the script)
+
 ### Logging
 Logging is disabled by default, and you can see the interna logs via the web gui.
 When you enable logging, keep in mind that the log file can become quite large.
