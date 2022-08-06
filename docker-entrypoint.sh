@@ -15,8 +15,8 @@ if [ -n "$EXTRA_CMD_ARG" ]; then
   CMD_ARGS="$CMD_ARGS $EXTRA_CMD_ARG"
 fi
 
-if [ -f /opt/domoticz/userdata/postinstall.sh ]; then
-	source /opt/domoticz/userdata/postinstall.sh
+if [ -f /opt/domoticz/userdata/customstart.sh ]; then
+	source /opt/domoticz/userdata/customstart.sh
 fi
 
 if [ $1 == "/opt/domoticz/domoticz" ]; then
