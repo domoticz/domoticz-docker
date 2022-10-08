@@ -27,6 +27,10 @@ if [ -n "$EXTRA_PACKAGES" ]; then
   done
 fi
 
+if [ -f /opt/domoticz/userdata/customstart.sh ]; then
+	source /opt/domoticz/userdata/customstart.sh
+fi
+
 if [ $1 == "/opt/domoticz/domoticz" ]; then
   exec $@ $CMD_ARGS
 else
