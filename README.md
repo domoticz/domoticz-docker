@@ -18,7 +18,7 @@ The recommended method is to use Docker Compose (see below).
 
 ### Pull image
 
-Pull the latest image:
+Pull the latest (beta) image:
 ```shell
 $ docker pull domoticz/domoticz
 ```
@@ -40,7 +40,7 @@ $ docker pull domoticz/domoticz:2021.1
 
 Pull beta with build number 12345:
 ```shell
-$ docker pull domoticz/domoticz:2021-beta.12345
+$ docker pull domoticz/domoticz:2022-beta.12345
 ```
 
 ### Run container
