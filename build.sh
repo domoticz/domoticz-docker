@@ -13,7 +13,7 @@ fi
 
 declare $(cat version.h | awk '{print $2"="$3}')
 RELEASE_DATE="$(date -d @$APPDATE -u +"%Y-%m-%dT%H:%M:%SZ")"
-BETA_VERSION=2021
+BETA_VERSION=2022
 echo "Building release $BETA_VERSION.$APPVERSION from commit $APPHASH ($RELEASE_DATE)";
 
 # Remove double quotes in APPHASH
