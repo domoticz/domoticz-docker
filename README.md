@@ -86,10 +86,11 @@ services:
     environment:
       - TZ=Europe/Amsterdam
       #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
+      #- EXTRA_CMD_ARG= -loglevel normal,status,error,debug -debuglevel normal,hardware,received,webserver,eventsystem,python,thread_id
 ```
 Now you can launch the container by issuing:
 
-    docker-compose up -d
+    docker compose up -d
 
 ### Environment values
 **ENV WWW_PORT=8080** - Specify default HTTP port  
@@ -97,7 +98,7 @@ Now you can launch the container by issuing:
 **ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
 **EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
 
-You could use the extra_cmd_arg value to specify the SSL certificate
+You could use the extra_cmd_arg value to specify the SSL certificate or set debug logging.
 
 ### Custom startup script for the container
 The container supports running a custom (bash) script before the domoticz process starts.
