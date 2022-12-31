@@ -22,7 +22,55 @@ Domoticz is a Home Automation System that lets you monitor and configure various
 ## How to use
 
 The recommended method is to use Docker Compose (See below)
+For instructions how to install docker (server version) and docker compose see:
+https://docs.docker.com/engine/install/
+https://docs.docker.com/compose/install/linux/#install-using-the-repository
 
+### Usage with docker-compose
+
+    mkdir /opt/domoticz
+    cd /opt/domoticz
+Inside this folder create a file (*docker-compose.yml*) with the following contents
+
+*docker-compose.yml*
+```yaml
+version: '3.3'
+
+services:
+  domoticz:
+    image: domoticz/domoticz
+    container_name: domoticz
+    restart: unless-stopped
+    # Pass devices to container
+    # devices:
+    #   - "/dev/serial/by-id/usb-0658_0200-if00-port0:/dev/ttyACM0"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/opt/domoticz/userdata
+    environment:
+      - TZ=Europe/Amsterdam
+      #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
+```
+If you are using a serial device, uncomment the line above and replace with the correct serial device. (can be found by issuing ls -al /dev/serial/by-id)
+
+Depending on your system, you can now launch the container by issuing:
+
+    docker-compose up -d
+or
+
+    docker compose up -d
+**(Note the difference with/without the dash, this also applies for instructions below)**
+
+### Environment values
+**ENV WWW_PORT=8080** - Specify default HTTP port  
+**ENV SSL_PORT=443** - Specify default SSL port  
+**ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
+**EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
+
+You could use the extra_cmd_arg value to specify the SSL certificate
+
+### Usage with traditional docker (non-compose)
 **Pull image**
 
 ```
@@ -51,54 +99,6 @@ docker run -d \
 
 Please replace all user variables in the above command defined by <> with the correct values (you can have several USB devices attached, just add other `--device=<device_id>`).
 
-**Access Domoticz**
-
-```
-http://<host ip>:8080
-*or*
-https://<host ip>:8443
-```
-
-8080 can be another port (you change `-p 8080:8080` to `-p 8081:8080` to have 8081 out of the container for example).
-
-### Usage with docker-compose
-
-    mkdir /opt/domoticz
-    cd /opt/domoticz
-Inside this folder create a file (*docker-compose.yml*) with the following contents
-
-*docker-compose.yml*
-```yaml
-version: '3.3'
-
-services:
-  domoticz:
-    image: domoticz/domoticz
-    container_name: domoticz
-    restart: unless-stopped
-    # Pass devices to container
-    # devices:
-    #   - "/dev/serial/by-id/usb-0658_0200-if00:/dev/ttyACM0"
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./config:/opt/domoticz/userdata
-    environment:
-      - TZ=Europe/Amsterdam
-      #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
-```
-Now you can launch the container by issuing:
-
-    docker-compose up -d
-
-### Environment values
-**ENV WWW_PORT=8080** - Specify default HTTP port  
-**ENV SSL_PORT=443** - Specify default SSL port  
-**ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
-**EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
-
-You could use the extra_cmd_arg value to specify the SSL certificate
-
 ### Custom startup script for the container
 The container supports running a custom (bash) script before the domoticz process starts.
 This way, you can customize anything in the container that you need:
@@ -121,6 +121,17 @@ docker-compose down
 docker-compose up -d --remove-orphans
 docker image prune
 ```
+
+
+**Access Domoticz**
+
+```
+http://<host ip>:8080
+*or*
+https://<host ip>:8443
+```
+
+8080 can be another port (you change `-p 8080:8080` to `-p 8081:8080` to have 8081 out of the container for example).
 
 ### Logging
 Logging is disabled by default, and you can see the interna logs via the web gui.
