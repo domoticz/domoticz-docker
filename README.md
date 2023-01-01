@@ -38,7 +38,7 @@ version: '3.3'
 
 services:
   domoticz:
-    image: domoticz/domoticz
+    image: domoticz/domoticz:stable
     container_name: domoticz
     restart: unless-stopped
     # Pass devices to container
@@ -62,6 +62,13 @@ or
     docker compose up -d
 **(Note the difference with/without the dash, this also applies for instructions below)**
 
+_You can also specify a specific version to use with:_
+**image: domoticz/domoticz:beta** _(will pull latest beta version)_  
+**image: domoticz/domoticz:stable** _(will pull latest stable version)_  
+**image: domoticz/domoticz:2022.2** _(will pull latest stable version 2022.2)_  
+**image: domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
+
+
 ### Environment values
 **ENV WWW_PORT=8080** - Specify default HTTP port  
 **ENV SSL_PORT=443** - Specify default SSL port  
@@ -78,11 +85,10 @@ docker pull domoticz/domoticz
 ```
 
 _You can also specify a specific version to use with:_
-
 **docker pull domoticz/domoticz:beta** _(will pull latest beta version)_  
 **docker pull domoticz/domoticz:stable** _(will pull latest stable version)_  
-**docker pull domoticz/domoticz:2021.1** _(will pull latest stable version 2021.1)_  
-**docker pull domoticz/domoticz:2021-beta.12345** _(will pull beta with build number 12345)_  
+**docker pull domoticz/domoticz:2022.2** _(will pull latest stable version 2021.1)_  
+**docker pull domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
 
 **Run container**
 
