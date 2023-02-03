@@ -1,4 +1,4 @@
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 
 ARG APP_VERSION
 ARG APP_HASH
@@ -32,7 +32,7 @@ RUN set -ex \
         libusb-0.1-4 \
         libsqlite3-0 \
         curl libcurl4 libcurl4-gnutls-dev \
-        libpython3.7-dev \
+        libpython3.9-dev \
         python3 \
         python3-pip \
     && OS="$(uname -s | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')" \
@@ -46,7 +46,6 @@ RUN set -ex \
     && rm domoticz.tgz \
     && mkdir -p /opt/domoticz/userdata \
     && rm -rf /var/lib/apt/lists/* \
-    && ln -s /usr/bin/pip3 /usr/bin/pip \
     && pip3 install setuptools requests
 
 VOLUME /opt/domoticz/userdata
