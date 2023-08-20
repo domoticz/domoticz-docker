@@ -28,6 +28,7 @@ RUN set -ex \
         tzdata \
         unzip \
         git \
+		jq \
         libudev-dev \
         libusb-0.1-4 \
         libsqlite3-0 \
