@@ -19,6 +19,13 @@ if [ -f /opt/domoticz/userdata/customstart.sh ]; then
 	source /opt/domoticz/userdata/customstart.sh
 fi
 
+# check if the examples/templates script folder exists, if not create them
+if [ ! -d "/opt/domoticz/userdata/scripts" ]; then
+	mkdir -p /opt/domoticz/userdata/scripts
+	cp -R /opt/domoticz/scripts/templates /opt/domoticz/userdata/scripts
+	cp -R /opt/domoticz/scripts/dzVents/examples /opt/domoticz/userdata/scripts
+fi
+
 if [ $1 == "/opt/domoticz/domoticz" ]; then
   exec $@ $CMD_ARGS
 else
