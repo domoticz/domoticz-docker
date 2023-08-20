@@ -22,6 +22,7 @@ fi
 # check if the examples/templates script folder exists, if not create them
 if [ ! -d "/opt/domoticz/userdata/scripts" ]; then
 	mkdir -p /opt/domoticz/userdata/scripts
+	mkdir -p /opt/domoticz/userdata/scripts/dzVents/data
 	cp -R /opt/domoticz/scripts/templates /opt/domoticz/userdata/scripts
 	cp -R /opt/domoticz/scripts/dzVents/examples /opt/domoticz/userdata/scripts
 fi
