@@ -47,7 +47,7 @@ RUN set -ex \
     && rm domoticz.tgz \
     && mkdir -p /opt/domoticz/userdata \
     && rm -rf /var/lib/apt/lists/* \
-    && pip3 install setuptools requests
+    && pip3 install setuptools requests pyserial
 
 VOLUME /opt/domoticz/userdata
 
