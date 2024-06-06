@@ -15,15 +15,17 @@ if [ -n "$EXTRA_CMD_ARG" ]; then
   CMD_ARGS="$CMD_ARGS $EXTRA_CMD_ARG"
 fi
 
-# check if the examples/templates script folder exists, if not create them
-if [ ! -d "/opt/domoticz/userdata/scripts/dzVents/data" ]; then
-	mkdir -p /opt/domoticz/userdata/scripts/dzVents/data
-	cp -R /opt/domoticz/scripts/templates /opt/domoticz/userdata/scripts
-	cp -R /opt/domoticz/scripts/dzVents/examples /opt/domoticz/userdata/scripts/dzVents
-fi
-
-# copy default customstart into place (-n = no overwrite)
-cp -n /opt/domoticz/customstart.sh /opt/domoticz/userdata/customstart.sh
+echo "$(date "+%F %T.%3N")  Launch: Begin container self-repair"
+TEMPLATE="/opt/domoticz"
+USERDATA="${TEMPLATE}/userdata"
+SCRIPTS="${USERDATA}/scripts"
+rsync -airp --ignore-existing --mkpath "${TEMPLATE}/plugins"                  "${USERDATA}"
+rsync -airp --ignore-existing          "${TEMPLATE}/customstart.sh"           "${USERDATA}"
+rsync -airp --ignore-existing --mkpath "${TEMPLATE}/www/templates"            "${USERDATA}/www"
+rsync -airp --ignore-existing --mkpath "${TEMPLATE}/scripts/templates"        "${SCRIPTS}"
+rsync -airp --ignore-existing --mkpath "${TEMPLATE}/scripts/dzVents/examples" "${SCRIPTS}/dzVents"
+chown -R 1000:1000 "${USERDATA}"
+echo "$(date "+%F %T.%3N")  Launch: End container self-repair"
 
 # presence of this file implies the container is already configured
 FIRSTRUN="/opt/domoticz/FIRSTRUN"
@@ -31,7 +33,7 @@ FIRSTRUN="/opt/domoticz/FIRSTRUN"
 # perform additional configuration if required
 if [ ! -f "$FIRSTRUN" ] ; then
 
-   echo "Running customstart.sh ..."
+   echo "$(date "+%F %T.%3N")  Launch: Running customstart.sh"
    source /opt/domoticz/userdata/customstart.sh
 
    # ensure working directory not changed by customstart script
