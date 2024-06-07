@@ -15,7 +15,7 @@ Docker containers with official Domoticz (beta) builds.
 | Arm 64 bit |
 | Linux 64 bit |
 
-Repository: https://hub.docker.com/r/domoticz/domoticz
+Repository: https://hub.docker.com/repository/docker/domoticz/domoticz
 
 Domoticz is a Home Automation System that lets you monitor and configure various devices like: Lights, Switches, various sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water and much more. Notifications/Alerts can be sent to any mobile device
 
@@ -34,8 +34,6 @@ Inside this folder create a file (*docker-compose.yml*) with the following conte
 
 *docker-compose.yml*
 ```yaml
-version: '3.3'
-
 services:
   domoticz:
     image: domoticz/domoticz:stable
@@ -48,6 +46,7 @@ services:
       - "8080:8080"
     volumes:
       - ./config:/opt/domoticz/userdata
+      - ./config/www/templates:/opt/domoticz/www/templates
     environment:
       - TZ=Europe/Amsterdam
       #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
@@ -56,10 +55,11 @@ If you are using a serial device, uncomment the line above and replace with the 
 
 Depending on your system, you can now launch the container by issuing:
 
-    docker-compose up -d
+    docker compose up -d
 or
 
-    docker compose up -d
+    docker-compose up -d
+
 **(Note the difference with/without the dash, this also applies for instructions below)**
 
 _You can also specify a specific version to use with:_
@@ -122,10 +122,7 @@ You need to place your python plugins is folder
 ### Updating the image
 From within the container folder issue:
 ```
-docker-compose pull domoticz
-docker-compose down
-docker-compose up -d --remove-orphans
-docker image prune
+docker compose pull && docker compose up --force-recreate --build -d && docker image prune -f
 ```
 
 
