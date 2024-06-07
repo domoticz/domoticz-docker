@@ -26,6 +26,7 @@ RUN set -ex \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
         tzdata \
+        rsync \
         unzip \
         git \
 		jq \
@@ -64,6 +65,7 @@ ENV EXTRA_CMD_ARG=
 ENV TZ=Europe/Amsterdam
 
 COPY docker-entrypoint.sh /usr/local/bin/
+COPY customstart.sh /opt/domoticz/customstart.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 
