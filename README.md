@@ -46,7 +46,6 @@ services:
       - "8080:8080"
     volumes:
       - ./config:/opt/domoticz/userdata
-      - ./config/www/templates:/opt/domoticz/www/templates
     environment:
       - TZ=Europe/Amsterdam
       #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
