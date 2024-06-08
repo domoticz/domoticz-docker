@@ -1,5 +1,6 @@
 
 
+
 Domoticz
 ======
 
@@ -46,6 +47,7 @@ services:
       - "8080:8080"
     volumes:
       - ./config:/opt/domoticz/userdata
+      #- ./config/www/templates:/opt/domoticz/www/templates
     environment:
       - TZ=Europe/Amsterdam
       #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
@@ -62,10 +64,10 @@ or
 **(Note the difference with/without the dash, this also applies for instructions below)**
 
 _You can also specify a specific version to use with:_
-**image: domoticz/domoticz:beta** _(will pull latest beta version)_  
-**image: domoticz/domoticz:stable** _(will pull latest stable version)_  
-**image: domoticz/domoticz:2022.2** _(will pull latest stable version 2022.2)_  
-**image: domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
+**image: domoticz/domoticz:beta** _(will pull latest beta version)_
+**image: domoticz/domoticz:stable** _(will pull latest stable version)_
+**image: domoticz/domoticz:2024.2** _(will pull latest stable version 2024.2)_
+**image: domoticz/domoticz:2024-beta.12345** _(will pull beta with build number 12345)_
 
 
 ### Environment values
@@ -84,10 +86,10 @@ docker pull domoticz/domoticz
 ```
 
 _You can also specify a specific version to use with:_
-**docker pull domoticz/domoticz:beta** _(will pull latest beta version)_  
-**docker pull domoticz/domoticz:stable** _(will pull latest stable version)_  
-**docker pull domoticz/domoticz:2022.2** _(will pull latest stable version 2021.1)_  
-**docker pull domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
+**docker pull domoticz/domoticz:beta** _(will pull latest beta version)_
+**docker pull domoticz/domoticz:stable** _(will pull latest stable version)_
+**docker pull domoticz/domoticz:2024.2** _(will pull latest stable version 2024.2)_
+**docker pull domoticz/domoticz:2024-beta.12345** _(will pull beta with build number 12345)_
 
 **Run container**
 
@@ -103,6 +105,11 @@ docker run -d \
 ```
 
 Please replace all user variables in the above command defined by <> with the correct values (you can have several USB devices attached, just add other `--device=<device_id>`).
+
+### Custom Templates
+If you want to use custom templates, remove the remark in the folder mapping as show below. (**After you have started the container at least one time!!**)
+
+    - ./config/www/templates:/opt/domoticz/www/templates
 
 ### Custom startup script for the container
 The container supports running a custom (bash) script before the domoticz process starts.
