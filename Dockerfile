@@ -51,6 +51,7 @@ RUN set -ex \
     && pip3 install setuptools requests pyserial
 
 VOLUME /opt/domoticz/userdata
+VOLUME /opt/domoticz/www/templates
 
 EXPOSE 8080
 EXPOSE 443
@@ -68,6 +69,9 @@ COPY docker-entrypoint.sh /usr/local/bin/
 COPY customstart.sh /opt/domoticz/customstart.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
     && ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+
+# squirrel the web templates (used during self-repair by docker-entrypoint.sh)
+RUN cp -a /opt/domoticz/www/templates /opt/domoticz/www-templates
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["/opt/domoticz/domoticz"]
