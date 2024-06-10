@@ -3,10 +3,9 @@
 TEMPLATE="/opt/domoticz"
 USERDATA="${TEMPLATE}/userdata"
 SCRIPTS="${USERDATA}/scripts"
-WEBROOT="${USERDATA}/www"
+WEBROOT="${TEMPLATE}/www"
 
 CMD_ARGS="-www $WWW_PORT"
-CMD_ARGS="$CMD_ARGS -wwwroot ${WEBROOT}"
 CMD_ARGS="$CMD_ARGS -noupdates -sslwww $SSL_PORT -userdata ${USERDATA}"
 
 if [ -n "$LOG_PATH" ]; then
@@ -24,7 +23,7 @@ fi
 echo "$(date "+%F %T.%3N")  Launch: Begin container self-repair"
 rsync -airp --ignore-existing --mkpath "${TEMPLATE}/plugins/examples"         "${USERDATA}/plugins"
 rsync -airp --ignore-existing          "${TEMPLATE}/customstart.sh"           "${USERDATA}"
-rsync -airp --ignore-existing --mkpath "${TEMPLATE}/www"                      "${USERDATA}"
+rsync -airp                   --mkpath "${TEMPLATE}/www-templates/"           "${WEBROOT}/templates"
 rsync -airp --ignore-existing --mkpath "${TEMPLATE}/scripts/dzVents/examples" "${SCRIPTS}/dzVents"
 chown -R 1000:1000 "${USERDATA}"
 echo "$(date "+%F %T.%3N")  Launch: End container self-repair"
