@@ -43,7 +43,7 @@ RUN set -ex \
     && archive_file="domoticz_${OS}_${MACH}.tgz" \
     && version_file="version_${OS}_${MACH}.h" \
     && history_file="history_${OS}_${MACH}.txt" \
-    && if [ -z "$STABLE"]; then curl -k -L https://releases.domoticz.com/releases/beta/${archive_file} --output domoticz.tgz; else curl -k -L https://releases.domoticz.com/releases/release/${archive_file} --output domoticz.tgz; fi \
+    && if [ -z "$STABLE"]; then curl -k -L https://releases.domoticz.com/beta/${archive_file} --output domoticz.tgz; else curl -k -L https://releases.domoticz.com/release/${archive_file} --output domoticz.tgz; fi \
     && tar xfz domoticz.tgz \
     && rm domoticz.tgz \
     && mkdir -p /opt/domoticz/userdata \

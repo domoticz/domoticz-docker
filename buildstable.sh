@@ -4,7 +4,7 @@ set -e
 
 BUILDX_PLATFORMS="linux/arm/v7,linux/arm64,linux/amd64"
 
-curl -ksL https://releases.domoticz.com/releases/release/version_linux_x86_64.h --output version.h
+curl -ksL https://releases.domoticz.com/release/version_linux_x86_64.h --output version.h
 if [ $? -ne 0 ]
 then
         echo "Error downloading version file!";
