@@ -23,8 +23,11 @@ WORKDIR /opt/domoticz
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN set -ex \
-    && apt-get update \
+    && rm /var/lib/dpkg/info/libc-bin.* \
+    && apt-get clean \
+    && apt-get update -qq \
     && apt-get install --no-install-recommends -y \
+        libc-bin \	
         tzdata \
         rsync \
         unzip \
