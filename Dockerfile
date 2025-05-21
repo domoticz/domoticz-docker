@@ -27,7 +27,8 @@ RUN set -ex \
     && apt-get clean \
     && apt-get update -qq \
     && apt-get install --no-install-recommends -y \
-        libc-bin \	
+        ca-certificates \
+        libc-bin \
         tzdata \
         rsync \
         unzip \
