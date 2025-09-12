@@ -1,10 +1,24 @@
-FROM debian:bullseye-slim
+FROM python:3.11-slim AS compiler
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /opt/domoticz
+
+RUN python -m venv /opt/venv
+# Enable venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN pip install -U setuptools requests pyserial
+
+# done with python packages
+
+FROM debian:bookworm-slim AS application
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 ARG APP_VERSION
 ARG APP_HASH
 ARG BUILD_DATE
 # If stable argument is passed it will download stable instead of beta
-ARG STABLE
+#ARG STABLE
 
 LABEL org.label-schema.version=$APP_VERSION \
       org.label-schema.build-date=$BUILD_DATE \
@@ -22,24 +36,29 @@ WORKDIR /opt/domoticz
 
 ARG DEBIAN_FRONTEND=noninteractive
 
+COPY --from=compiler /opt/venv /opt/venv
+#fix symlink
+COPY --from=compiler /usr/local/bin/python /opt/venv/bin
+
 RUN set -ex \
     && rm /var/lib/dpkg/info/libc-bin.* \
     && apt-get clean \
     && apt-get update -qq \
     && apt-get install --no-install-recommends -y \
+        ca-certificates \
         libc-bin \	
         tzdata \
         rsync \
         unzip \
+        less \
+        vim \
         git \
-		jq \
+        jq \
         libudev-dev \
         libusb-0.1-4 \
         libsqlite3-0 \
-        curl libcurl4 libcurl4-gnutls-dev \
-        libpython3.9-dev \
-        python3 \
-        python3-pip \
+        curl libcurl4-gnutls-dev \
+        libpython3-dev \
     && OS="$(uname -s | sed 'y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/')" \
     && MACH=$(uname -m) \
     && if [ ${MACH} = "armv6l" ]; then MACH = "armv7l"; fi \
@@ -50,8 +69,7 @@ RUN set -ex \
     && tar xfz domoticz.tgz \
     && rm domoticz.tgz \
     && mkdir -p /opt/domoticz/userdata \
-    && rm -rf /var/lib/apt/lists/* \
-    && pip3 install setuptools requests pyserial
+    && rm -rf /var/lib/apt/lists/*
 
 VOLUME /opt/domoticz/userdata
 
@@ -63,6 +81,9 @@ ENV DATABASE_PATH=
 ENV WWW_PORT=8080
 ENV SSL_PORT=443
 ENV EXTRA_CMD_ARG=
+
+# Enable venv
+ENV PATH="/opt/venv/bin:$PATH"
 
 # timezone env with default
 ENV TZ=Europe/Amsterdam
