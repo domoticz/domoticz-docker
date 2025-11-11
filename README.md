@@ -74,6 +74,7 @@ _You can also specify a specific version to use with:_
 **ENV WWW_PORT=8080** - Specify default HTTP port  
 **ENV SSL_PORT=443** - Specify default SSL port  
 **ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
+**HOSTNAME=your-domoticz-host.example.com** - Optional option to specify hostname for OAuth 
 **EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
 
 You could use the extra_cmd_arg value to specify the SSL certificate
