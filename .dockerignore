@@ -1,0 +1,8 @@
+.git
+*.bak
+*.backup
+*.old
+version.h
+docker-compose.yml
+build.sh
+buildstable.sh

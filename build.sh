@@ -4,25 +4,54 @@ set -e
 
 BUILDX_PLATFORMS="linux/arm/v7,linux/arm64,linux/amd64"
 
-curl -ksL https://releases.domoticz.com/releases/beta/version_linux_x86_64.h --output version.h
-if [ $? -ne 0 ]
-then
-        echo "Error downloading version file!";
-        exit 1
+# Parse arguments
+STABLE=""
+for arg in "$@"; do
+  case "$arg" in
+    --stable) STABLE=true ;;
+    *) echo "Unknown argument: $arg"; exit 1 ;;
+  esac
+done
+
+# Download version file from beta or release channel
+if [ -z "$STABLE" ]; then
+  CHANNEL="beta"
+else
+  CHANNEL="release"
+fi
+
+curl -ksL "https://releases.domoticz.com/${CHANNEL}/version_linux_x86_64.h" --output version.h
+if [ $? -ne 0 ]; then
+  echo "Error downloading version file!"
+  exit 1
 fi
 
 declare $(cat version.h | awk '{print $2"="$3}')
 RELEASE_DATE="$(date -d @$APPDATE -u +"%Y-%m-%dT%H:%M:%SZ")"
-BETA_VERSION=2024
-echo "Building release $BETA_VERSION.$APPVERSION from commit $APPHASH ($RELEASE_DATE)";
 
 # Remove double quotes in APPHASH
 APPHASH="${APPHASH%\"}"
 APPHASH="${APPHASH#\"}"
 
-#docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-docker buildx rm domoticz_build >/dev/null 2>&1 || true
-docker buildx create --name domoticz_build
+# Auto-detect year from the release timestamp
+BUILD_YEAR="$(date -d @$APPDATE -u +"%Y")"
+
+# Build tags
+BUILDX_ARGS="--build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE"
+
+if [ -z "$STABLE" ]; then
+  echo "Building beta release ${BUILD_YEAR}-beta.${APPVERSION} from commit $APPHASH ($RELEASE_DATE)"
+  TAGS="--tag domoticz/domoticz:latest --tag domoticz/domoticz:beta --tag domoticz/domoticz:${BUILD_YEAR}-beta.${APPVERSION}"
+else
+  # For stable releases, use year as major version component
+  STABLE_VERSION="${BUILD_YEAR}.${APPVERSION}"
+  echo "Building stable release ${STABLE_VERSION} from commit $APPHASH ($RELEASE_DATE)"
+  BUILDX_ARGS="$BUILDX_ARGS --build-arg STABLE=true"
+  TAGS="--tag domoticz/domoticz:stable --tag domoticz/domoticz:${STABLE_VERSION}"
+fi
+
+# Reuse existing builder if available, otherwise create one
+docker buildx inspect domoticz_build >/dev/null 2>&1 || docker buildx create --name domoticz_build
 docker buildx use domoticz_build
 docker buildx inspect --bootstrap
-echo "docker buildx build --push --no-cache --platform ${BUILDX_PLATFORMS} --build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE --tag domoticz/domoticz:latest --tag domoticz/domoticz:beta --tag domoticz/domoticz:$BETA_VERSION-beta.$APPVERSION ."
+docker buildx build --push --platform ${BUILDX_PLATFORMS} ${BUILDX_ARGS} ${TAGS} .

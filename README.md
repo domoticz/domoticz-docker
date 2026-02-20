@@ -1,5 +1,6 @@
 
 
+
 Domoticz
 ======
 
@@ -15,7 +16,7 @@ Docker containers with official Domoticz (beta) builds.
 | Arm 64 bit |
 | Linux 64 bit |
 
-Repository: https://hub.docker.com/r/domoticz/domoticz
+Repository: https://hub.docker.com/repository/docker/domoticz/domoticz
 
 Domoticz is a Home Automation System that lets you monitor and configure various devices like: Lights, Switches, various sensors/meters like Temperature, Rain, Wind, UV, Electra, Gas, Water and much more. Notifications/Alerts can be sent to any mobile device
 
@@ -34,8 +35,6 @@ Inside this folder create a file (*docker-compose.yml*) with the following conte
 
 *docker-compose.yml*
 ```yaml
-version: '3.3'
-
 services:
   domoticz:
     image: domoticz/domoticz:stable
@@ -48,6 +47,7 @@ services:
       - "8080:8080"
     volumes:
       - ./config:/opt/domoticz/userdata
+      #- ./config/www/templates:/opt/domoticz/www/templates
     environment:
       - TZ=Europe/Amsterdam
       #- LOG_PATH=/opt/domoticz/userdata/domoticz.log
@@ -56,23 +56,25 @@ If you are using a serial device, uncomment the line above and replace with the 
 
 Depending on your system, you can now launch the container by issuing:
 
-    docker-compose up -d
+    docker compose up -d
 or
 
-    docker compose up -d
+    docker-compose up -d
+
 **(Note the difference with/without the dash, this also applies for instructions below)**
 
 _You can also specify a specific version to use with:_
-**image: domoticz/domoticz:beta** _(will pull latest beta version)_  
-**image: domoticz/domoticz:stable** _(will pull latest stable version)_  
-**image: domoticz/domoticz:2022.2** _(will pull latest stable version 2022.2)_  
-**image: domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
+**image: domoticz/domoticz:beta** _(will pull latest beta version)_
+**image: domoticz/domoticz:stable** _(will pull latest stable version)_
+**image: domoticz/domoticz:2024.2** _(will pull latest stable version 2024.2)_
+**image: domoticz/domoticz:2024-beta.12345** _(will pull beta with build number 12345)_
 
 
 ### Environment values
 **ENV WWW_PORT=8080** - Specify default HTTP port  
 **ENV SSL_PORT=443** - Specify default SSL port  
 **ENV TZ=Europe/Amsterdam** - Specify default timezone (see /usr/share/zoneinfo folder), **only needed when you can not mount the volume /etc/localtime**  
+**HOSTNAME=your-domoticz-host.example.com** - Optional option to specify hostname for OAuth 
 **EXTRA_CMD_ARG** - Option to override additional command line parameters (See domoticz --help or [wiki page](https://www.domoticz.com/wiki/Command_line_parameters))
 
 You could use the extra_cmd_arg value to specify the SSL certificate
@@ -85,10 +87,10 @@ docker pull domoticz/domoticz
 ```
 
 _You can also specify a specific version to use with:_
-**docker pull domoticz/domoticz:beta** _(will pull latest beta version)_  
-**docker pull domoticz/domoticz:stable** _(will pull latest stable version)_  
-**docker pull domoticz/domoticz:2022.2** _(will pull latest stable version 2021.1)_  
-**docker pull domoticz/domoticz:2022-beta.12345** _(will pull beta with build number 12345)_  
+**docker pull domoticz/domoticz:beta** _(will pull latest beta version)_
+**docker pull domoticz/domoticz:stable** _(will pull latest stable version)_
+**docker pull domoticz/domoticz:2024.2** _(will pull latest stable version 2024.2)_
+**docker pull domoticz/domoticz:2024-beta.12345** _(will pull beta with build number 12345)_
 
 **Run container**
 
@@ -104,6 +106,11 @@ docker run -d \
 ```
 
 Please replace all user variables in the above command defined by <> with the correct values (you can have several USB devices attached, just add other `--device=<device_id>`).
+
+### Custom Templates
+If you want to use custom templates, remove the remark in the folder mapping as show below. (**After you have started the container at least one time!!**)
+
+    - ./config/www/templates:/opt/domoticz/www/templates
 
 ### Custom startup script for the container
 The container supports running a custom (bash) script before the domoticz process starts.
@@ -122,10 +129,7 @@ You need to place your python plugins is folder
 ### Updating the image
 From within the container folder issue:
 ```
-docker-compose pull domoticz
-docker-compose down
-docker-compose up -d --remove-orphans
-docker image prune
+docker compose pull && docker compose up --force-recreate --build -d && docker image prune -f
 ```
 
 

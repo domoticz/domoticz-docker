@@ -43,8 +43,8 @@ fi
 # mark/update the container as configured
 touch "$FIRSTRUN"
 
-if [ $1 == "/opt/domoticz/domoticz" ]; then
-  exec $@ $CMD_ARGS
+if [ "$1" = "/opt/domoticz/domoticz" ]; then
+  exec "$@" $CMD_ARGS
 else
   exec "$@"
 fi
