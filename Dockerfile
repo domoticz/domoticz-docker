@@ -1,4 +1,5 @@
-FROM python:3.11-slim AS compiler
+ARG PYTHON_VERSION=3.11
+FROM python:${PYTHON_VERSION}-slim AS compiler
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /opt/domoticz
@@ -29,6 +30,7 @@ LABEL org.label-schema.version=$APP_VERSION \
 
 WORKDIR /opt/domoticz
 
+ARG PYTHON_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 
 COPY --from=compiler /opt/venv /opt/venv
@@ -55,8 +57,7 @@ RUN set -ex \
         libusb-0.1-4 \
         libsqlite3-0 \
         curl libcurl4 \
-        libpython3.11 \
-        libpython3.11-dev \
+        libpython${PYTHON_VERSION}-dev \
     && ldconfig \
     && rm -rf /var/lib/apt/lists/*
 
