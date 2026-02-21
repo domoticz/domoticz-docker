@@ -1,4 +1,6 @@
+# Debian bookworm = Python 3.11, trixie = Python 3.13
 ARG PYTHON_VERSION=3.11
+ARG DEBIAN_VERSION=bookworm
 FROM python:${PYTHON_VERSION}-slim AS compiler
 ENV PYTHONUNBUFFERED=1
 
@@ -9,7 +11,8 @@ RUN python -m venv /opt/venv \
 
 # done with python packages
 
-FROM debian:bookworm-slim AS application
+ARG DEBIAN_VERSION
+FROM debian:${DEBIAN_VERSION}-slim AS application
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 ARG APP_VERSION
