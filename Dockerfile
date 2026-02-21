@@ -55,7 +55,8 @@ RUN set -ex \
         libusb-0.1-4 \
         libsqlite3-0 \
         curl libcurl4 \
-        libpython3-stdlib \
+        libpython3.11 \
+        python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Download domoticz (changes each build)
