@@ -5,22 +5,27 @@ set -e
 BUILDX_PLATFORMS="linux/arm/v7,linux/arm64,linux/amd64"
 
 # Parse arguments
-STABLE=""
+CHANNEL=""
 for arg in "$@"; do
   case "$arg" in
-    --stable) STABLE=true ;;
+    --beta) CHANNEL="beta" ;;
+    --stable) CHANNEL="stable" ;;
     *) echo "Unknown argument: $arg"; exit 1 ;;
   esac
 done
 
-# Download version file from beta or release channel
-if [ -z "$STABLE" ]; then
+if [ -z "$CHANNEL" ]; then
   CHANNEL="beta"
-else
-  CHANNEL="release"
 fi
 
-curl -ksL "https://releases.domoticz.com/${CHANNEL}/version_linux_x86_64.h" --output version.h
+# Map channel to download path
+if [ "$CHANNEL" = "stable" ]; then
+  VERSION_CHANNEL="release"
+else
+  VERSION_CHANNEL="beta"
+fi
+
+curl -ksL "https://releases.domoticz.com/${VERSION_CHANNEL}/version_linux_x86_64.h" --output version.h
 if [ $? -ne 0 ]; then
   echo "Error downloading version file!"
   exit 1
@@ -39,7 +44,7 @@ BUILD_YEAR="$(date -d @$APPDATE -u +"%Y")"
 # Build tags
 BUILDX_ARGS="--build-arg APP_VERSION=$APPVERSION --build-arg APP_HASH=$APPHASH --build-arg BUILD_DATE=$RELEASE_DATE"
 
-if [ -z "$STABLE" ]; then
+if [ "$CHANNEL" = "beta" ]; then
   echo "Building beta release ${BUILD_YEAR}-beta.${APPVERSION} from commit $APPHASH ($RELEASE_DATE)"
   TAGS="--tag domoticz/domoticz:latest --tag domoticz/domoticz:beta --tag domoticz/domoticz:${BUILD_YEAR}-beta.${APPVERSION}"
 else
