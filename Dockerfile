@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /opt/domoticz
 
 RUN python -m venv /opt/venv \
-    && /opt/venv/bin/pip install -U setuptools requests pyserial charset-normalizer==2.1.1
+    && /opt/venv/bin/pip install --quiet -U setuptools requests pyserial charset-normalizer==2.1.1
 
 # done with python packages
 
@@ -41,11 +41,11 @@ COPY --from=compiler /opt/venv /opt/venv
 COPY --from=compiler /usr/local/bin/python /opt/venv/bin
 
 # System dependencies (cached between builds)
-RUN set -ex \
+RUN set -e \
     && rm /var/lib/dpkg/info/libc-bin.* \
     && apt-get clean \
     && apt-get update -qq \
-    && apt-get install --no-install-recommends -y \
+    && apt-get install --no-install-recommends -qq -y \
         ca-certificates \
         libc-bin \
         tzdata \
@@ -66,7 +66,7 @@ RUN set -ex \
 
 # Download domoticz (changes each build)
 ARG STABLE
-RUN set -ex \
+RUN set -e \
     && OS="$(uname -s | tr '[:upper:]' '[:lower:]')" \
     && MACH=$(uname -m) \
     && if [ "${MACH}" = "armv6l" ]; then MACH="armv7l"; fi \

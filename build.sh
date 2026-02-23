@@ -58,5 +58,5 @@ fi
 # Reuse existing builder if available, otherwise create one
 docker buildx inspect domoticz_build >/dev/null 2>&1 || docker buildx create --name domoticz_build
 docker buildx use domoticz_build
-docker buildx inspect --bootstrap
-docker buildx build --push --platform ${BUILDX_PLATFORMS} ${BUILDX_ARGS} ${TAGS} .
+docker buildx inspect --bootstrap > /dev/null 2>&1
+docker buildx build --push --progress=plain --platform ${BUILDX_PLATFORMS} ${BUILDX_ARGS} ${TAGS} .
