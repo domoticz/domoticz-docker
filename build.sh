@@ -10,6 +10,7 @@ for arg in "$@"; do
   case "$arg" in
     --beta) CHANNEL="beta" ;;
     --stable) CHANNEL="stable" ;;
+    --release) CHANNEL="stable" ;;
     *) echo "Unknown argument: $arg"; exit 1 ;;
   esac
 done

@@ -1,6 +1,6 @@
 # Debian bookworm = Python 3.11, trixie = Python 3.13
-ARG PYTHON_VERSION=3.11
-ARG DEBIAN_VERSION=bookworm
+ARG PYTHON_VERSION=3.13
+ARG DEBIAN_VERSION=trixie
 FROM python:${PYTHON_VERSION}-slim AS compiler
 ENV PYTHONUNBUFFERED=1
 
@@ -59,7 +59,7 @@ RUN set -e \
         libudev1 \
         libusb-0.1-4 \
         libsqlite3-0 \
-        curl libcurl4 \
+        curl libcurl4-gnutls-dev \
         libpython${PYTHON_VERSION}-dev \
     && ldconfig \
     && rm -rf /var/lib/apt/lists/*
