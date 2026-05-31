@@ -49,8 +49,17 @@ if [ "$CHANNEL" = "beta" ]; then
   echo "Building beta release ${BUILD_YEAR}-beta.${APPVERSION} from commit $APPHASH ($RELEASE_DATE)"
   TAGS="--tag domoticz/domoticz:latest --tag domoticz/domoticz:beta --tag domoticz/domoticz:${BUILD_YEAR}-beta.${APPVERSION}"
 else
-  # For stable releases, use year as major version component
-  STABLE_VERSION="${BUILD_YEAR}.${APPVERSION}"
+  # For stable releases, take the version from the top of History.txt (e.g. "Version 2026.2")
+  curl -ksL "https://releases.domoticz.com/${VERSION_CHANNEL}/History.txt" --output History.txt
+  if [ $? -ne 0 ]; then
+    echo "Error downloading History file!"
+    exit 1
+  fi
+  STABLE_VERSION="$(grep -m1 '^Version ' History.txt | awk '{print $2}')"
+  if [ -z "$STABLE_VERSION" ]; then
+    echo "Error: could not determine stable version from History.txt!"
+    exit 1
+  fi
   echo "Building stable release ${STABLE_VERSION} from commit $APPHASH ($RELEASE_DATE)"
   BUILDX_ARGS="$BUILDX_ARGS --build-arg STABLE=true"
   TAGS="--tag domoticz/domoticz:stable --tag domoticz/domoticz:${STABLE_VERSION}"
@@ -61,3 +70,6 @@ docker buildx inspect domoticz_build >/dev/null 2>&1 || docker buildx create --n
 docker buildx use domoticz_build
 docker buildx inspect --bootstrap > /dev/null 2>&1
 docker buildx build --push --progress=plain --platform ${BUILDX_PLATFORMS} ${BUILDX_ARGS} ${TAGS} .
+
+# Clean up downloaded files
+rm -f version.h History.txt
