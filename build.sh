@@ -4,6 +4,19 @@ set -e
 
 BUILDX_PLATFORMS="linux/arm/v7,linux/arm64,linux/amd64"
 
+# Number of beta tags to keep on Docker Hub. Anonymous clients cannot page past
+# tag offset 1000, so the total tag count has to stay below that.
+KEEP_BETA_TAGS="${KEEP_BETA_TAGS:-900}"
+export KEEP_BETA_TAGS
+
+# The tag cleanup reuses the credentials from 'docker login'. This file only
+# has to exist when a separate account or token is wanted for the deletes.
+if [ -f "$HOME/.domoticz-dockerhub.env" ]; then
+  set -a
+  . "$HOME/.domoticz-dockerhub.env"
+  set +a
+fi
+
 # Parse arguments
 CHANNEL=""
 for arg in "$@"; do
@@ -70,6 +83,12 @@ docker buildx inspect domoticz_build >/dev/null 2>&1 || docker buildx create --n
 docker buildx use domoticz_build
 docker buildx inspect --bootstrap > /dev/null 2>&1
 docker buildx build --push --progress=plain --platform ${BUILDX_PLATFORMS} ${BUILDX_ARGS} ${TAGS} .
+
+# Drop the oldest beta tags so the repository stays under Docker Hub's
+# anonymous pagination limit. Never fatal, the image is already pushed.
+if [ "$CHANNEL" = "beta" ]; then
+  python3 "$(dirname "$0")/prune-tags.py" || echo "Warning: Docker Hub tag cleanup failed"
+fi
 
 # Clean up downloaded files
 rm -f version.h History.txt

@@ -6,3 +6,4 @@ version.h
 docker-compose.yml
 build.sh
 buildstable.sh
+prune-tags.py
