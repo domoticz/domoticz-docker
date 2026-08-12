@@ -35,6 +35,7 @@ import urllib.error
 import urllib.request
 
 API = "https://hub.docker.com/v2"
+PAGE_SIZE = 100
 BETA_TAG = re.compile(r"^(\d{4})-beta\.(\d+)$")
 STABLE_TAG = re.compile(r"^\d{4}\.\d+$")
 REGISTRIES = ("https://index.docker.io/v1/", "index.docker.io",
@@ -109,18 +110,57 @@ def credentials_from_docker_config():
     return None, None
 
 
-def login(username, password):
-    return request(f"{API}/users/login/", "POST",
-                   {"username": username, "password": password})["token"]
+class Hub:
+    """Hub web API session that logs back in when its token expires.
+
+    The login token is only valid for a limited time, which a run deleting
+    hundreds of tags one by one will outlive.
+    """
+
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+        self.token = None
+        self.login()
+
+    def login(self):
+        self.token = request(f"{API}/users/login/", "POST",
+                             {"username": self.username,
+                              "password": self.password})["token"]
+
+    def call(self, url, method="GET"):
+        try:
+            return request(url, method, token=self.token)
+        except urllib.error.HTTPError as err:
+            if err.code != 401:
+                raise
+            self.login()
+            return request(url, method, token=self.token)
 
 
-def list_tags(repo, token):
+def list_tags(hub, repo):
+    """Read every tag, page by page.
+
+    The repository tag count Docker Hub reports is cached and lags behind
+    deletions, so the 'next' link it hands out can point past the real last
+    page. Walking off the end that way answers 404, which just means done.
+    """
     tags = []
-    url = f"{API}/repositories/{repo}/tags/?page_size=100&ordering=last_updated"
-    while url:
-        page = request(url, token=token)
-        tags.extend(page["results"])
-        url = page.get("next")
+    page = 1
+    while True:
+        url = (f"{API}/repositories/{repo}/tags/"
+               f"?page_size={PAGE_SIZE}&page={page}&ordering=last_updated")
+        try:
+            data = hub.call(url)
+        except urllib.error.HTTPError as err:
+            if err.code == 404 and tags:
+                break
+            raise
+        results = data.get("results", [])
+        tags.extend(results)
+        if len(results) < PAGE_SIZE or not data.get("next"):
+            break
+        page += 1
     return tags
 
 
@@ -143,8 +183,8 @@ def main():
         return 0
 
     try:
-        token = login(username, password)
-        tags = list_tags(args.repo, token)
+        hub = Hub(username, password)
+        tags = list_tags(hub, args.repo)
     except (urllib.error.URLError, KeyError) as err:
         print(f"prune-tags: could not read tag list: {err}", file=sys.stderr)
         return 1
@@ -180,9 +220,12 @@ def main():
             print(f"  would delete {name}")
             continue
         try:
-            request(f"{API}/repositories/{args.repo}/tags/{name}/", "DELETE", token=token)
+            hub.call(f"{API}/repositories/{args.repo}/tags/{name}/", "DELETE")
             print(f"  deleted {name}")
         except urllib.error.HTTPError as err:
+            if err.code == 404:
+                print(f"  {name} was already gone")
+                continue
             failed += 1
             print(f"  failed to delete {name}: {err.code} {err.reason}", file=sys.stderr)
 
