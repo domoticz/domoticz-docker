@@ -5,8 +5,9 @@ set -e
 BUILDX_PLATFORMS="linux/arm/v7,linux/arm64,linux/amd64"
 
 # Number of beta tags to keep on Docker Hub. Anonymous clients cannot page past
-# tag offset 1000, so the total tag count has to stay below that.
-KEEP_BETA_TAGS="${KEEP_BETA_TAGS:-900}"
+# tag offset 1000, so the total tag count has to stay below that. Beta tags
+# pushed since the last stable release are kept on top of this.
+KEEP_BETA_TAGS="${KEEP_BETA_TAGS:-200}"
 export KEEP_BETA_TAGS
 
 # The tag cleanup reuses the credentials from 'docker login'. This file only

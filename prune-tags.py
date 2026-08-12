@@ -10,6 +10,11 @@ it grows without bound.
 Only tags matching 20XX-beta.NNNNN are considered. latest, beta, stable and
 the stable version tags (2026.2 and friends) are never touched.
 
+Two rules decide what stays, and a tag survives if either one keeps it: the
+newest KEEP_BETA_TAGS builds, and every beta pushed since the last stable
+release. The second rule is a floor, so the running development cycle is
+always kept whole no matter how many builds it took.
+
 Deleting a tag is not something the push credential can do: buildx pushes
 through the registry API, which has its manifest delete endpoint disabled on
 Docker Hub, so removal has to go through the Hub web API with a normal account
@@ -20,6 +25,7 @@ DOCKERHUB_TOKEN override that when set.
 
 import argparse
 import base64
+import datetime
 import json
 import os
 import re
@@ -30,6 +36,7 @@ import urllib.request
 
 API = "https://hub.docker.com/v2"
 BETA_TAG = re.compile(r"^(\d{4})-beta\.(\d+)$")
+STABLE_TAG = re.compile(r"^\d{4}\.\d+$")
 REGISTRIES = ("https://index.docker.io/v1/", "index.docker.io",
               "registry-1.docker.io", "docker.io")
 
@@ -44,6 +51,22 @@ def request(url, method="GET", data=None, token=None):
     with urllib.request.urlopen(req, timeout=60) as response:
         raw = response.read()
     return json.loads(raw) if raw else {}
+
+
+def pushed_at(tag):
+    value = tag.get("last_updated") or ""
+    try:
+        return datetime.datetime.strptime(value[:19], "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        return None
+
+
+def last_stable_release(tags):
+    """When the most recent stable release was pushed, if it can be told."""
+    times = [pushed_at(tag) for tag in tags
+             if tag["name"] == "stable" or STABLE_TAG.match(tag["name"])]
+    times = [t for t in times if t]
+    return max(times) if times else None
 
 
 def credentials_from_docker_config():
@@ -105,7 +128,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", default=os.environ.get("HUB_REPO", "domoticz/domoticz"))
     parser.add_argument("--keep", type=int,
-                        default=int(os.environ.get("KEEP_BETA_TAGS", "900")),
+                        default=int(os.environ.get("KEEP_BETA_TAGS", "200")),
                         help="number of newest beta tags to keep")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
@@ -130,12 +153,26 @@ def main():
     for tag in tags:
         match = BETA_TAG.match(tag["name"])
         if match:
-            betas.append((int(match.group(1)), int(match.group(2)), tag["name"]))
-    betas.sort(reverse=True)
-    stale = [name for _, _, name in betas[args.keep:]]
+            betas.append({"name": tag["name"],
+                          "order": (int(match.group(1)), int(match.group(2))),
+                          "pushed": pushed_at(tag)})
+    betas.sort(key=lambda beta: beta["order"], reverse=True)
+
+    keep = {beta["name"] for beta in betas[:args.keep]}
+    released = last_stable_release(tags)
+    if released:
+        since = {beta["name"] for beta in betas
+                 if beta["pushed"] and beta["pushed"] >= released}
+        print(f"prune-tags: last stable release {released:%Y-%m-%d}, "
+              f"{len(since)} beta tags pushed since")
+        keep |= since
+    else:
+        print("prune-tags: no stable release tag found, keeping newest builds only")
+
+    stale = [beta["name"] for beta in betas if beta["name"] not in keep]
 
     print(f"prune-tags: {len(tags)} tags on {args.repo}, {len(betas)} beta tags, "
-          f"keeping the newest {args.keep}, removing {len(stale)}")
+          f"keeping {len(keep)}, removing {len(stale)}")
 
     failed = 0
     for name in stale:
