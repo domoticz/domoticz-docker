@@ -15,22 +15,6 @@ ARG DEBIAN_VERSION
 FROM debian:${DEBIAN_VERSION}-slim AS application
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
-ARG APP_VERSION
-ARG APP_HASH
-ARG BUILD_DATE
-
-LABEL org.label-schema.version=$APP_VERSION \
-      org.label-schema.build-date=$BUILD_DATE \
-      org.label-schema.vcs-ref=$APP_HASH \
-      org.label-schema.vcs-url="https://github.com/domoticz/domoticz" \
-      org.label-schema.url="https://domoticz.com/" \
-      org.label-schema.vendor="Domoticz" \
-      org.label-schema.name="Domoticz" \
-      org.label-schema.description="Domoticz open source Home Automation system" \
-      org.label-schema.license="GPLv3" \
-      org.label-schema.docker.cmd="docker run -v ./config:/config -v ./plugins:/opt/domoticz/plugins -e DATABASE_PATH=/config/domoticz.db -p 8080:8080 -d domoticz/domoticz" \
-      maintainer="Domoticz Docker Maintainers <info@domoticz.com>"
-
 WORKDIR /opt/domoticz
 
 ARG PYTHON_VERSION
@@ -63,6 +47,24 @@ RUN set -e \
         libpython${PYTHON_VERSION}-dev \
     && ldconfig \
     && rm -rf /var/lib/apt/lists/*
+
+# Build identification. Declared after the system dependencies on purpose:
+# these values change every build and invalidate the cache of every RUN below.
+ARG APP_VERSION
+ARG APP_HASH
+ARG BUILD_DATE
+
+LABEL org.label-schema.version=$APP_VERSION \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$APP_HASH \
+      org.label-schema.vcs-url="https://github.com/domoticz/domoticz" \
+      org.label-schema.url="https://domoticz.com/" \
+      org.label-schema.vendor="Domoticz" \
+      org.label-schema.name="Domoticz" \
+      org.label-schema.description="Domoticz open source Home Automation system" \
+      org.label-schema.license="GPLv3" \
+      org.label-schema.docker.cmd="docker run -v ./config:/config -v ./plugins:/opt/domoticz/plugins -e DATABASE_PATH=/config/domoticz.db -p 8080:8080 -d domoticz/domoticz" \
+      maintainer="Domoticz Docker Maintainers <info@domoticz.com>"
 
 # Download domoticz (changes each build)
 ARG STABLE
