@@ -126,6 +126,10 @@ If you want the script to run only once, you need to build that in your script (
 When launching the docker container for the first time, a plugin folder is created in the *userdata* folder
 You need to place your python plugins is folder
 
+The plugins that ship with Domoticz (for example Joulo) are copied into that folder on every start of the container,
+so there is nothing to download. They are updated when the image contains a newer version of a file,
+a file that you edited afterwards is left alone.
+
 ### Updating the image
 From within the container folder issue:
 ```

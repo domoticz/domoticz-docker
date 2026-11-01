@@ -20,6 +20,13 @@ TEMPLATE="/opt/domoticz"
 USERDATA="${TEMPLATE}/userdata"
 SCRIPTS="${USERDATA}/scripts"
 rsync -airp --ignore-existing --mkpath "${TEMPLATE}/plugins/examples"         "${USERDATA}/plugins"
+# Plugins that ship with Domoticz (everything in plugins/ except examples): copy the ones that are missing and
+# update the files of the others when the image has a newer version. A file that was edited later is left alone.
+for PLUGIN in "${TEMPLATE}"/plugins/*/; do
+  NAME="$(basename "${PLUGIN}")"
+  [ "${NAME}" = "examples" ] && continue
+  rsync -airp --update --mkpath --exclude '__pycache__' --exclude 'joulo-data' "${TEMPLATE}/plugins/${NAME}" "${USERDATA}/plugins"
+done
 rsync -airp --ignore-existing          "${TEMPLATE}/customstart.sh"           "${USERDATA}"
 rsync -airp --ignore-existing --mkpath "${TEMPLATE}/www/templates"            "${USERDATA}/www"
 rsync -airp --ignore-existing --mkpath "${TEMPLATE}/scripts/dzVents/examples" "${SCRIPTS}/dzVents"

@@ -121,7 +121,7 @@ The build script reuses the `domoticz_build` buildx builder instance across runs
 When the container starts, `docker-entrypoint.sh` performs the following:
 
 1. **Assembles command-line arguments** from environment variables (`WWW_PORT`, `SSL_PORT`, `LOG_PATH`, `DATABASE_PATH`, `EXTRA_CMD_ARG`)
-2. **Self-repair** - syncs default plugins, templates, dzVents examples, and `customstart.sh` into the userdata volume (only copies missing files, never overwrites)
+2. **Self-repair** - syncs the plugin examples, templates, dzVents examples, and `customstart.sh` into the userdata volume (only copies missing files, never overwrites), and the plugins that ship with Domoticz (copies missing ones, updates files when the image has a newer version, never overwrites a file edited later)
 3. **First-run customization** - if no `FIRSTRUN` marker exists, sources `userdata/customstart.sh` for user-defined setup (apt packages, pip installs, etc.)
 4. **Starts Domoticz** with the assembled arguments
 
